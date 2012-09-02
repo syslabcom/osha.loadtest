@@ -1,0 +1,8 @@
+=======================
+Change log for loadtest
+=======================
+
+0.1 (unreleased)
+================
+
+initial release

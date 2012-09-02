@@ -1,0 +1,5 @@
+lightusagegroup:loadtest
+mediumusagegroup:loadtest
+heavyusagegroup:loadtest
+admingroup:loadtest
+manager:admin
