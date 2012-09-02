@@ -40,9 +40,10 @@ class light(osha.loadtest.base.TestCase):
         * perform a search for "accident"
         """
         self.get('/en/')
-        self.assertEllipsis(
-            '...Navigation...Highlights...In Focus...Free Newsletter...Latest Tweets...', self.getBody())
+        self.assertEllipsis('...Highlights...In Focus...Navigation...Free Newsletter...Latest Tweets...', self.getBody())
+#        self.assertEllipsis(
+#            '...Navigation...Highlights...In Focus...Free Newsletter...Latest Tweets...', self.getBody())
         self.get('/en/about/')
-        self.assertEllipsis('...WHo we are...What we do...', self.getBody())
+        self.assertEllipsis('...Who we are...What we do...', self.getBody())
 
 
