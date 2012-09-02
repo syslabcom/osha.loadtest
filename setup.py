@@ -54,7 +54,6 @@ Programming Language :: Python :: 2 :: Only
     description=__doc__.strip(),
     long_description='\n\n'.join(open(project_path(name)).read() for name in (
             'README.txt',
-            'HACKING.txt',
             'CHANGES.txt',
             )),
 

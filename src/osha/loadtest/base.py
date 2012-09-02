@@ -7,11 +7,10 @@ from gocept.testing.assertion import Ellipsis, Exceptions
 import os
 import os.path
 import urlparse
-import webwork.loadtest.main
+import osha.loadtest.main
 import random
 
 LIPSUM = funkload.Lipsum.Lipsum()
-NUMWS = 40
 
 class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
 
@@ -29,13 +28,13 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
     # funkload sets the path of the log files, they don't end up among the
     # source files but rather in the current working directory of the user
     # before starting the load test run, provided the test runner exports that
-    # directory to the environment (webwork.loadtest.main.run_test() does).
+    # directory to the environment (osha.loadtest.main.run_test() does).
     # Otherwise, they will end up among the source according to funkload's
     # default behaviour.
 
     @property
     def log_path(self):
-        cwd = os.environ.get('WEBWORK_LOADTEST_CWD', '')
+        cwd = os.environ.get('LOADTEST_CWD', '')
         return os.path.join(cwd, os.path.basename(self._log_path))
 
     @log_path.setter
@@ -44,7 +43,7 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
 
     @property
     def result_path(self):
-        cwd = os.environ.get('WEBWORK_LOADTEST_CWD', '')
+        cwd = os.environ.get('LOADTEST_CWD', '')
         return os.path.join(cwd, os.path.basename(self._result_path))
 
     @result_path.setter
@@ -83,10 +82,10 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
             self.server_url, super(TestCase, self).getLastUrl())
 
     def get_credentials(self, group):
-        return webwork.loadtest.main.get_credentials(group)
+        return osha.loadtest.main.get_credentials(group)
 
     def get_sequence(self):
-        return webwork.loadtest.main.get_seq()
+        return osha.loadtest.main.get_seq()
 
     def setUp(self):
         pass 
@@ -100,74 +99,28 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
 
     def setUpBench(self):
         self.workspaces = []
-        self.login()
-
-
-        self.get('/stardesk/workspaces')
-        spaces = self.getBody()
-        
-        if 'baseline' not in spaces:
-            self.create_workspace('baseline')
-            self.__class__.workspace = self.last_url
-            self.create_document('my-doc')
-            self.__class__.document = self.last_url.replace('/view', '/')
-            self.edit_document()
-        
-        for i in range(NUMWS):
-            ws_name = "baseline-%0.2d" %i
-            if ws_name not in spaces:
-                self.create_workspace(ws_name)
-
-        self.logout()
+#        self.login()
+#        self.logout()
             
             
     def tearDownBench(self):
         pass
-        #if self.workspaces:
-        #    self.login('manager')
-        #    self.delete_workspaces(self.workspaces)
-
-    def delete_workspaces(self, ids):
-        id_param = [('ids:list', x) for x in ids]
-        self.post(
-            '/stardesk/workspaces', id_param + [('manage_delObjects:method', 'Delete')])
-#        for id in ids:
-#            self.assertNotIn(id, self.getBody())
-
+ 
     def login(self, group=None):
         if group is None:
             group = self.group
         username, password = self.get_credentials(group)
-#        if self.is_epp:
-#            resp = self.post(self.server_url + "portal/login",
-#               {'username': username,
-#                    'password': password,
-#                    'initialURI': '/portal/dologin'})
-        #else:
-        resp = self.post('/stardesk/login_form', {
+        resp = self.post('/en/login_form', {
                 '__ac_name': username,
                 '__ac_password': password,
                 'form.submitted': '1',
                 'submit': 'Login'})
         self.assertEllipsis(
-            '...Dashboard...', self.getBody())
+            '...logged in...', self.getBody())
 
     def logout(self):
-        if self.is_epp:
-            self.get('/portal/staralliance/profile?portal:componentId=UIPortal&portal:action=Logout')
-        else:
-            self.get('/stardesk/logout')
+        self.get('/stardesk/logout')
 
-    def create_workspace(self, name):
-        self.get('/stardesk/workspaces/++add++staralliance.types.workspace')
-        self.post('/stardesk/workspaces/++add++staralliance.types.workspace', {
-                'title': name,
-                'redirect': '#',
-                'submit': 'submit'})
-        self.assertEllipsis(
-            '...Stardesk...baseline...', self.getBody())
-        workspace_id = filter(None, self.getLastUrl().rsplit('/'))[-1]
-        self.workspaces.append(workspace_id)
 
     def create_document(self, name):
         self.get('++add++Document')
@@ -232,18 +185,10 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
     def delete_file(self, url=''):
         if not url:
 	    url = self.last_url
-        #self.get(url+'/delete_confirmation')
-        #auth = funkload.utils.extract_token(
-        #    self.getBody(), 'name="_authenticator" value="', '"')
-        #self.post(url+'/delete_confirmation', {
-        #        'form.submitted': '1',
-        #        'submit': 'Delete',
-        #        '_authenticator': auth,
-        #        })
-	pe = url.split('/')
-	parent = '/'.join(pe[:-1])
-	id = pe[-1]
-	self.get('%s/manage_delObjects?ids:list=%s' % (parent, id))
+        pe = url.split('/')
+        parent = '/'.join(pe[:-1])
+        id = pe[-1]
+        self.get('%s/manage_delObjects?ids:list=%s' % (parent, id))
         self.get(url, ok_codes=[404])
 
 

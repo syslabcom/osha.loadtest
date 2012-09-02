@@ -34,7 +34,7 @@ def _run_funkload(funkload_module):
 
         module_file = module_path.split('.')[-1] + '.py'
         argv = [module_file, test_method, '--url=' + server_url] + sys.argv[4:]
-        os.environ['WEBWORK_LOADTEST_CWD'] = cwd
+        os.environ['LOADTEST_CWD'] = cwd
         exit_code = run_as_script(funkload_module, 'main', *argv)
 
     finally:
@@ -82,7 +82,7 @@ def configure_credential_server_port():
     config.read('credential.conf')
     host = config.get('server', 'host')
     port = random.randint(1024, 65535)
-    os.environ['WEBWORK_LOADTEST_CREDENTIAL_SERVER'] = '%s:%s' % (host, port)
+    os.environ['LOADTEST_CREDENTIAL_SERVER'] = '%s:%s' % (host, port)
     config_file = 'credential-%s.conf' % port
     config = open('credential.conf')
     config2 = open(config_file, 'w')
@@ -93,13 +93,13 @@ def configure_credential_server_port():
 
 def get_credentials(group):
     cred_host, cred_port = os.environ[
-        'WEBWORK_LOADTEST_CREDENTIAL_SERVER'].split(':')
+        'LOADTEST_CREDENTIAL_SERVER'].split(':')
     return xmlrpc_get_credential(cred_host, cred_port, group)
 
 
 def get_seq():
     cred_host, cred_port = os.environ[
-        'WEBWORK_LOADTEST_CREDENTIAL_SERVER'].split(':')
+        'LOADTEST_CREDENTIAL_SERVER'].split(':')
     return xmlrpc_get_seq(cred_host, cred_port)
 
 

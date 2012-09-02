@@ -1,9 +1,9 @@
 import funkload.utils
 import os
-import webwork.loadtest.base
+import osha.loadtest.base
 
 
-class light(webwork.loadtest.base.TestCase):
+class light(osha.loadtest.base.TestCase):
 
     group = 'lightusagegroup'
     is_epp = False
@@ -22,21 +22,27 @@ class light(webwork.loadtest.base.TestCase):
         
     def test_light(self):
         """
-        * Login
-        * Click on a workspace's direct URL
-        * Download a document
-        * Logoff
+        * open homepage
+        * open about section
+        * read subpages
+        * open practical solutions
+        * open risk observatory
+        * open topics, priority groups, sectors
+        * open campaigns
+        * opn competitions
+        * open press
+        * open publications
+        * open organisations
+        * open oshnetwork
+        * open legislation
+        * open safety and health in figures
+        * open seminary
+        * perform a search for "accident"
         """
-        self.login()
-        self.get('/')
+        self.get('/en/')
         self.assertEllipsis(
-            '...About...Members...Dashboard...', self.getBody())
-        self.get('/stardesk/workspaces/baseline')
-        self.assertEllipsis('...baseline...', self.getBody())
-        self.get('/stardesk/workspaces/baseline/my-doc')
-        self.assertEllipsis('...Dummy content follows...', self.getBody())
-        self.logout()
+            '...Navigation...Highlights...In Focus...Free Newsletter...Latest Tweets...', self.getBody())
+        self.get('/en/about/')
+        self.assertEllipsis('...WHo we are...What we do...', self.getBody())
 
 
-class light_epp(light):
-    is_epp = True
