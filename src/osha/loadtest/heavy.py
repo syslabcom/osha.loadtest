@@ -3,7 +3,7 @@ import osha.loadtest.base
 from funkload.utils import xmlrpc_get_seq
 
     
-class heavy(webwork.loadtest.base.TestCase):
+class heavy(osha.loadtest.base.TestCase):
     group = 'heavyusagegroup'
     chost,cport = os.environ.get('LOADTEST_CREDENTIAL_SERVER').split(':')
     workspaces = []
