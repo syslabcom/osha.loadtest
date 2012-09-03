@@ -24,12 +24,12 @@ class light(osha.loadtest.base.TestCase):
         """
         * open homepage
         * open about section
-        * read subpages
+        * read subpages...
         * open practical solutions
         * open risk observatory
         * open topics, priority groups, sectors
         * open campaigns
-        * opn competitions
+        * open competitions
         * open press
         * open publications
         * open organisations
@@ -41,9 +41,7 @@ class light(osha.loadtest.base.TestCase):
         """
         self.get('/en/')
         self.assertEllipsis('...Highlights...In Focus...Navigation...Free Newsletter...Latest Tweets...', self.getBody())
-#        self.assertEllipsis(
-#            '...Navigation...Highlights...In Focus...Free Newsletter...Latest Tweets...', self.getBody())
         self.get('/en/about/')
-        self.assertEllipsis('...Who we are...What we do...', self.getBody())
+        self.assertEllipsis('...Who we are...What we do...More about...', self.getBody())
 
 
