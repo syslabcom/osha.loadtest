@@ -88,17 +88,71 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
         return osha.loadtest.main.get_seq()
 
     def setUp(self):
-        pass 
+        self.login()
+        folder_portal_factory = self._browse(self.server_url + "/Members/" + self.user_id +"/createObject?type_name=Folder",
+                                                     method='get', 
+                                                     follow_redirect=False,
+                                                     description = 'Get folder portal factory')
+        folder_edit_url = folder_portal_factory.headers.get('Location')     
+        folder_id = folder_edit_url.split('/')[-2]
+        folder_created = self.post(folder_edit_url, data=[
+                    ['id', folder_id],
+                    ['title', 'folder'],
+                    ['description', ''],
+                    ['description_text_format', 'text/plain'],
+                    ['subject_existing_keywords:default:list', ''],
+                    ['location', ''],
+                    ['language', ''],
+                    ['effectiveDate', ''],
+                    ['effectiveDate_year', '0000'],
+                    ['effectiveDate_month', '00'],
+                    ['effectiveDate_day', '00'],
+                    ['effectiveDate_hour', '12'],
+                    ['effectiveDate_minute', '00'],
+                    ['effectiveDate_ampm', 'AM'],
+                    ['expirationDate', ''],
+                    ['expirationDate_year', '0000'],
+                    ['expirationDate_month', '00'],
+                    ['expirationDate_day', '00'],
+                    ['expirationDate_hour', '12'],
+                    ['expirationDate_minute', '00'],
+                    ['expirationDate_ampm', 'AM'],
+                    ['creators:lines', 'user'],
+                    ['contributors:lines', ''],
+                    ['rights', ''],
+                    ['rights_text_format', 'text/html'],
+                    ['allowDiscussion:boolean:default', ''],
+                    ['excludeFromNav:boolean:default', ''],
+                    ['nextPreviousEnabled:boolean:default', ''],
+                    ['fieldsets:list', 'default'],
+                    ['fieldsets:list', 'categorization'],
+                    ['fieldsets:list', 'dates'],
+                    ['fieldsets:list', 'ownership'],
+                    ['fieldsets:list', 'settings'],
+                    ['form.submitted', '1'],
+                    ['add_reference.field:record', ''],
+                    ['add_reference.type:record', ''],
+                    ['add_reference.destination:record', ''],
+                    ['last_referer', 'http://localhost:8080/Members/' + self.user_id + '/view'],
+                    ['form_submit', 'Save']],
+                    description="Post /Members/user...280843853/atct_edit")
+
+        new_folder_id = folder_created.url.split('/')[-2]
+        self.new_folder_id = new_folder_id
+        
         if not self.in_bench_mode:
             self.setUpBench()
+        self.logout()
 
     def tearDown(self):
-        pass
-        #if not self.in_bench_mode:
-        #    self.tearDownBench()
+        self.login()
+        self.get(self.server_url + "/Members/" + self.user_id + "/manage_delObjects?ids:list=" + self.new_folder_id)
+        if not self.in_bench_mode:
+            self.tearDownBench()
+        self.logout()
 
     def setUpBench(self):
-        self.workspaces = []
+        pass
 #        self.login()
 #        self.logout()
             
@@ -110,6 +164,7 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
         if group is None:
             group = self.group
         username, password = self.get_credentials(group)
+        self.user_id = username
         resp = self.post('/en/login_form', {
                 '__ac_name': username,
                 '__ac_password': password,
@@ -119,18 +174,66 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
             '...logged in...', self.getBody())
 
     def logout(self):
-        self.get('/stardesk/logout')
+        self.get('/logout')
 
 
     def create_document(self, name):
-        self.get('++add++Document')
-        self.post('++add++Document', {
-                'title': name,
-                'redirect': 'view',
-                'submit': 'submit'})
-	self.last_url = self.last_url.replace('/view', '')
-        self.assertEllipsis(
-            '...%s...' % name, self.getBody())
+        document_portal_factory = self._browse(self.server_url + "/Members/" + self.user_id +"/" + self.new_folder_id + "/createObject?type_name=Document",
+                                             method='get', 
+                                             follow_redirect=False,
+                                             description = 'Get document portal factory')
+
+        document_edit_url = document_portal_factory.headers.get('Location')        
+        document_id = document_edit_url.split('/')[-2]
+
+        self.post(document_edit_url, data=[                                                                                                                                                         
+            ['id', document_id],
+            ['title', LIPSUM.getSubject(length=5, prefix=None, uniq=False,length_min=None, length_max=None)],
+            ['description', LIPSUM.getMessage(length=10)],
+            ['description_text_format', 'text/plain'],
+            ['text_text_format', 'text/html'],
+            ['text_text_format:default', 'text/html'],
+            ['text', LIPSUM.getMessage(length=30)],
+            ['text_file', Upload("")],
+            ['subject_existing_keywords:default:list', ''],
+            ['relatedItems:default:list', ''],
+            ['location', ''],
+            ['language', ''],
+            ['effectiveDate', ''],
+            ['effectiveDate_year', '0000'],
+            ['effectiveDate_month', '00'],
+            ['effectiveDate_day', '00'],
+            ['effectiveDate_hour', '12'],
+            ['effectiveDate_minute', '00'],
+            ['effectiveDate_ampm', 'AM'],
+            ['expirationDate', ''],
+            ['expirationDate_year', '0000'],
+            ['expirationDate_month', '00'],
+            ['expirationDate_day', '00'],
+            ['expirationDate_hour', '12'],
+            ['expirationDate_minute', '00'],
+            ['expirationDate_ampm', 'AM'],
+            ['creators:lines', 'user'],
+            ['contributors:lines', ''],
+            ['rights', ''],
+            ['rights_text_format', 'text/html'],
+            ['allowDiscussion:boolean:default', ''],
+            ['excludeFromNav:boolean:default', ''],
+            ['presentation:boolean:default', ''],
+            ['tableContents:boolean:default', ''],
+            ['cmfeditions_version_comment', 'Lorem Ipsum'],
+            ['fieldsets:list', 'default'],
+            ['fieldsets:list', 'categorization'],
+            ['fieldsets:list', 'dates'],
+            ['fieldsets:list', 'ownership'],
+            ['fieldsets:list', 'settings'],
+            ['form.submitted', '1'],
+            ['add_reference.field:record', ''],
+            ['add_reference.type:record', ''],
+            ['add_reference.destination:record', ''],
+            ['last_referer', 'http://localhost:8080/Members/' + self.user_id +'/' + self.new_folder_id + '/'],
+            ['form_submit', 'Save']],
+            description="Post /Members/user...511052309/atct_edit")
 
     def edit_document(self):
         self.get('edit')
