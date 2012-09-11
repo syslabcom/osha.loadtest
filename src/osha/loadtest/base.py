@@ -254,8 +254,8 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
                 })
         self.get(document, ok_codes=[404])
 
-
-    def create_file(self, name):
+    # alter code aus copy und paste?
+    def create_file_old(self, name):
         self.get(self.workspace)
         self.get(self.workspace+"/@@quick_upload_init") 
         
@@ -270,6 +270,15 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
                  })
         self.last_url = self.last_url.replace('/view', '')
         return filename
+
+    def create_file(self, name):
+        file_portal_factory = self._browse(self.server_url + "/Members/" + self.user_id +"/" + self.new_folder_id + "/createObject?type_name=File",
+                                             method='get', 
+                                             follow_redirect=False,
+                                             description = 'Get file portal factory')
+
+        file_edit_url = file_portal_factory.headers.get('Location')        
+        file_id = file_edit_url.split('/')[-2]
 
     def download_file(self, name):
         self.get(name)

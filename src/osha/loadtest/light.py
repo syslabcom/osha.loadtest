@@ -148,14 +148,11 @@ class light(osha.loadtest.base.TestCase):
         # self.assertEllipsis('...Competitions...Navigation...Events...Closed competitions...', self.getBody())
         self.get('/en/competitions/good-practice-award_2012-2013')
         self.assertEllipsis('...Good Practice Awards 2012-2013...More competitions...', self.getBody())
-        self.get('/en/')
-        self.assertEllipsis('...x...', self.getBody())
-        self.get('/en/')
-        self.assertEllipsis('...x...', self.getBody())
-        self.get('/en/')
-        self.assertEllipsis('...x...', self.getBody())
-        self.get('/en/')
-        self.assertEllipsis('...x...', self.getBody())
+        self.get('/en/competitions/hw_film_award_2012')
+        self.assertEllipsis('...Healthy Workplaces Film Award 2012...More competitions...', self.getBody())
+        self.get('/en/competitions/european-photo-competition-2011')
+        self.assertEllipsis('...European Photo Competition...More competitions...', self.getBody())
+        
 
 
 
