@@ -280,6 +280,53 @@ class TestCase(FunkLoadTestCase, Ellipsis, Exceptions):
         file_edit_url = file_portal_factory.headers.get('Location')        
         file_id = file_edit_url.split('/')[-2]
 
+        self.post(file_edit_url, data=[                                                                                                                                                         
+            ['id', file_id],
+            ['title', LIPSUM.getSubject(length=5, prefix=None, uniq=False,length_min=None, length_max=None)],
+            ['description', LIPSUM.getMessage(length=10)],
+            ['description_text_format', 'text/plain'],
+            # ['text_text_format', 'text/html'],
+            # ['text_text_format:default', 'text/html'],
+            # ['text', LIPSUM.getMessage(length=30)],
+            ['text_file', Upload("")],
+            ['subject_existing_keywords:default:list', ''],
+            ['relatedItems:default:list', ''],
+            ['location', ''],
+            ['language', ''],
+            ['effectiveDate', ''],
+            ['effectiveDate_year', '0000'],
+            ['effectiveDate_month', '00'],
+            ['effectiveDate_day', '00'],
+            ['effectiveDate_hour', '12'],
+            ['effectiveDate_minute', '00'],
+            ['effectiveDate_ampm', 'AM'],
+            ['expirationDate', ''],
+            ['expirationDate_year', '0000'],
+            ['expirationDate_month', '00'],
+            ['expirationDate_day', '00'],
+            ['expirationDate_hour', '12'],
+            ['expirationDate_minute', '00'],
+            ['expirationDate_ampm', 'AM'],
+            ['creators:lines', 'user'],
+            ['contributors:lines', ''],
+            ['rights', ''],
+            ['rights_text_format', 'text/html'],
+            ['allowDiscussion:boolean:default', ''],
+            ['excludeFromNav:boolean:default', ''],
+            ['cmfeditions_version_comment', 'Lorem Ipsum'],
+            ['fieldsets:list', 'default'],
+            ['fieldsets:list', 'categorization'],
+            ['fieldsets:list', 'dates'],
+            ['fieldsets:list', 'ownership'],
+            ['fieldsets:list', 'settings'],
+            ['form.submitted', '1'],
+            ['add_reference.field:record', ''],
+            ['add_reference.type:record', ''],
+            ['add_reference.destination:record', ''],
+            ['last_referer', 'http://localhost:8080/Members/' + self.user_id +'/' + self.new_folder_id + '/'],
+            ['form_submit', 'Save']],
+            description="Post /Members/user...511052309/atct_edit")
+
     def download_file(self, name):
         self.get(name)
         self.assertEllipsis('Dummy content follows...', self.getBody())
